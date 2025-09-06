@@ -1,0 +1,58 @@
+import os
+import tkinter as tk
+from tkinter import ttk
+import pandas as pd
+from pymol import cmd
+
+# Load docking scores from CSV
+def load_scores():
+    score_file = "DockingResults/scores.csv"
+    if os.path.exists(score_file):
+        return pd.read_csv(score_file)
+    else:
+        return pd.DataFrame(columns=["Ligand", "Cavity", "Score"])
+
+# Load pose into PyMOL
+def load_pose(ligand, cavity):
+    pose_file = f"DockingResults/{ligand}_{cavity}.pdb"
+    if os.path.exists(pose_file):
+        cmd.load(pose_file)
+        cmd.show("sticks", pose_file)
+        cmd.color("cyan", pose_file)
+        cmd.zoom("all")
+
+# GUI setup
+def build_gui():
+    scores = load_scores()
+
+    root = tk.Tk()
+    root.title("Dock & Compare Panel")
+
+    # Dropdown for ligand selection
+    ligand_var = tk.StringVar()
+    ligand_list = scores["Ligand"].unique().tolist()
+    ligand_menu = ttk.Combobox(root, textvariable=ligand_var, values=ligand_list)
+    ligand_menu.pack(pady=10)
+
+    # Table for cavity scores
+    tree = ttk.Treeview(root, columns=("Cavity", "Score"), show="headings")
+    tree.heading("Cavity", text="Cavity")
+    tree.heading("Score", text="Docking Score")
+    tree.pack(pady=10)
+
+    # Load button
+    def on_load():
+        tree.delete(*tree.get_children())
+        selected = ligand_var.get()
+        filtered = scores[scores["Ligand"] == selected].sort_values(by="Score")
+        for _, row in filtered.iterrows():
+            tree.insert("", "end", values=(row["Cavity"], row["Score"]))
+            load_pose(selected, row["Cavity"])
+
+    btn = tk.Button(root, text="Load & Compare", command=on_load)
+    btn.pack(pady=10)
+
+    root.mainloop()
+
+# Run the GUI
+build_gui()
