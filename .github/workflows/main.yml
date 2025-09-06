@@ -1,0 +1,19 @@
+ChemInsightLab/
+├── Protein/
+│   └── 1U72.pdb
+├── Ligand/
+│   ├── butane.sdf
+│   └── sudan_ligand.mol2
+├── DockingResults/
+│   ├── ACY_C1.pdb
+│   ├── Butane_C1.pdb
+│   └── scores.csv
+├── SpectralAnalysis/
+│   └── Butane HOMO LUMO,ESP,CONTOUR,ED.docx
+├── Documentation/
+│   ├── ACY-1U72 Dock.docx
+│   ├── BUTANE DOCKING.docx
+│   └── CB-Dock2 HTML output.txt
+├── GUI/
+│   └── DockComparePanel.py
+├── README.md
